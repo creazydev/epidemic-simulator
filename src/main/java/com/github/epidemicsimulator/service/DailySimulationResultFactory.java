@@ -9,53 +9,95 @@ import java.util.List;
 
 @Component
 public class DailySimulationResultFactory implements SimulationResultFactory<Simulation, SimulationResult> {
-
     @Override
     public List<SimulationResult> create(Simulation simulation) {
-        List<SimulationResult> results = new ArrayList<>(simulation.getTs());
-
-        long pv = simulation.getPopulation() - simulation.getInfected();
-        long pi = simulation.getInfected();
+        //initial simulation result vars
+        long pv = simulation.getP() - simulation.getI();
+        long pi = simulation.getI();
         long pm = 0;
         long pr = 0;
 
-        long prevPi;
+        //pocket variables
+        long previousPi;
         long newDeaths;
         long newRecovers;
-        long newInfected;
+        long newInfections;
 
-        for (int ts = 1, tm = 1, ti = 1; ts <= simulation.getTs() ; ts++, tm++, ts++) {
-            if ( tm == simulation.getTm() && ts >= simulation.getTm() ) {
-                prevPi = results.get(ts - simulation.getTs()).getPi();
-                newDeaths = (long) (prevPi * simulation.getM());
+        //time unit counters (days)
+        int ts, tm, ti;
 
+        List<SimulationResult> results = new ArrayList<>(simulation.getTs());
+        results.add(getInitialResult(pi, pv, simulation));
+
+        for (ts = tm = ti = 1; ts < simulation.getTs() ; ts++, tm++, ti++) {
+            //death case
+            if (hasEnoughTimePassed(tm, simulation.getTm(), ts)) {
+                previousPi = results.get(ts - simulation.getTm()).getPi();
+                if (!hasLeftMoreThan(pi, previousPi)) {
+                    previousPi = pi;
+                }
+
+                newDeaths = round(previousPi * simulation.getM());
                 pi -= newDeaths;
                 pm += newDeaths;
                 tm = 0;
             }
 
-            if ( ti == simulation.getTm() && ts >= simulation.getTi() ) {
-                prevPi = results.get(ts - simulation.getTs()).getPi();
-                newRecovers = (long) (prevPi / simulation.getM());
+            //recovery case
+            if (hasEnoughTimePassed(ti, simulation.getTi(), ts)) {
+                previousPi = results.get(ts - simulation.getTi()).getPi();
+                if (!hasLeftMoreThan(pi, previousPi)) {
+                    previousPi = pi;
+                }
 
+                newRecovers = round(previousPi * (1-simulation.getM()) );
                 pi -= newRecovers;
                 pr += newRecovers;
                 ti = 0;
             }
 
-            newInfected = (long) (pi * simulation.getR());
-            pi += newInfected;
-            pv -= newInfected;
+            if (hasLeftMoreThan(pv, 0)) {
+                newInfections = round(pi * simulation.getR());
+                if (!hasLeftMoreThan(pv, newInfections)) {
+                    pi += pv;
+                    pv = 0;
+                } else {
+                    pi += newInfections;
+                    pv -= newInfections;
+                }
+            }
 
+            //init and add
             SimulationResult result = new SimulationResult();
-            result.setPi(pi);
-            result.setPv(pv);
-            result.setPm(pm);
-            result.setPr(pr);
+                result.setPi(pi);
+                result.setPv(pv);
+                result.setPm(pm);
+                result.setPr(pr);
+                result.setSimulation(simulation);
             results.add(result);
         }
-
-        results.forEach( (simulationResult) -> simulationResult.setSimulation(simulation) );
         return results;
+    }
+
+    public static long round(double arg) {
+        return Math.round(arg);
+    }
+
+    private boolean hasEnoughTimePassed(int timeSinceLast, int timeRequired, int dayOfSimulation) {
+        return timeSinceLast == timeRequired && dayOfSimulation >= timeRequired;
+    }
+
+    private boolean hasLeftMoreThan(long first, long second) {
+        return first > second;
+    }
+
+    private SimulationResult getInitialResult(long pi, long pv, Simulation simulation) {
+        SimulationResult result = new SimulationResult();
+        result.setPi(pi);
+        result.setPv(pv);
+        result.setPm(0L);
+        result.setPr(0L);
+        result.setSimulation(simulation);
+        return result;
     }
 }

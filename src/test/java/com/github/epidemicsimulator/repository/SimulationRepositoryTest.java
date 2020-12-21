@@ -33,8 +33,8 @@ class SimulationRepositoryTest {
 
     private static Simulation setUpSimulation() {
         Simulation simulation = new Simulation();
-        simulation.setPopulation(10);
-        simulation.setInfected(5);
+        simulation.setP(10);
+        simulation.setI(5);
         simulation.setR(0.5);
         simulation.setM(0.1);
         simulation.setTi(5);

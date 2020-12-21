@@ -4,8 +4,12 @@ import com.github.epidemicsimulator.domain.Simulation;
 import com.github.epidemicsimulator.exception.SimulationNotFoundException;
 import com.github.epidemicsimulator.service.SimulationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @RestController
@@ -19,7 +23,8 @@ public class SimulationController {
     }
 
     @PostMapping("/simulations")
-    Simulation newSimulation(@RequestBody Simulation simulation) {
+    @ResponseStatus(value = HttpStatus.CREATED)
+    Simulation newSimulation(@Valid @RequestBody Simulation simulation) {
         return service.generateAndSave(simulation);
     }
 

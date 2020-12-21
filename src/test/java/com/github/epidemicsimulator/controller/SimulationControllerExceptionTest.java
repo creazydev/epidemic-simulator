@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -43,7 +44,7 @@ class SimulationControllerExceptionTest {
     private static final Long ID = 1L;
 
     @Test
-    public void shouldReturnNotFoundException() throws Exception {
+    public void shouldThrowNotFoundException() throws Exception {
         Long invalidId = -1L;
         String expected = new SimulationNotFoundException(invalidId).getMessage();
 
@@ -54,7 +55,7 @@ class SimulationControllerExceptionTest {
     }
 
     @Test
-    public void shouldReturnMethodNotSupportedOnPutMethod() throws Exception {
+    public void shouldThrowMethodNotSupportedOnPutMethod() throws Exception {
         mockMvc.perform(put(BASE_PATH + "/" + ID ))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof HttpRequestMethodNotSupportedException))
@@ -63,7 +64,7 @@ class SimulationControllerExceptionTest {
     }
 
     @Test
-    public void shouldReturnNotReadableExceptionOnInvalidRequestBody() throws Exception {
+    public void shouldThrowNotReadableExceptionOnInvalidRequestBody() throws Exception {
         String request = "some string";
         String responseBody = "JSON parse error";
         mockMvc.perform(post(BASE_PATH, request))

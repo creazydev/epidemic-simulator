@@ -3,7 +3,6 @@ package com.github.epidemicsimulator.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.epidemicsimulator.domain.Simulation;
 import com.github.epidemicsimulator.domain.SimulationResult;
-import com.github.epidemicsimulator.exception.SimulationNotFoundException;
 import com.github.epidemicsimulator.service.SimulationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,11 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -27,7 +24,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(SimulationController.class)
@@ -67,7 +63,7 @@ class SimulationControllerTest {
                     .perform(post(BASE_PATH)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(simulation.get())));
-        result.andExpect(status().isOk());
+        result.andExpect(status().isCreated());
         verifyJson(result, "");
     }
 
@@ -90,9 +86,9 @@ class SimulationControllerTest {
         Simulation simulation = this.simulation.get();
         action
             .andExpect(jsonPath( expressionPrefix + "id", is(simulation.getId().intValue()) ))
-            .andExpect(jsonPath( expressionPrefix + "name", is(simulation.getName()) ))
-            .andExpect(jsonPath( expressionPrefix + "population", is(((int) simulation.getPopulation())) ))
-            .andExpect(jsonPath( expressionPrefix + "infected", is((int) simulation.getInfected()) ))
+            .andExpect(jsonPath( expressionPrefix + "n", is(simulation.getN()) ))
+            .andExpect(jsonPath( expressionPrefix + "p", is(((int) simulation.getP())) ))
+            .andExpect(jsonPath( expressionPrefix + "i", is((int) simulation.getI()) ))
             .andExpect(jsonPath( expressionPrefix + "r", is(simulation.getR()) ))
             .andExpect(jsonPath( expressionPrefix + "m", is(simulation.getM()) ))
             .andExpect(jsonPath( expressionPrefix + "ti", is(simulation.getTi()) ))
@@ -102,7 +98,8 @@ class SimulationControllerTest {
                 .andExpect(jsonPath( expressionPrefix + "results[0].pi", is((int) simulationResult.getPi()) ))
                 .andExpect(jsonPath( expressionPrefix + "results[0].pv", is((int) simulationResult.getPv()) ))
                 .andExpect(jsonPath( expressionPrefix + "results[0].pm", is((int) simulationResult.getPm()) ))
-                .andExpect(jsonPath( expressionPrefix + "results[0].pr", is((int) simulationResult.getPr()) ));
+                .andExpect(jsonPath( expressionPrefix + "results[0].pr", is((int) simulationResult.getPr()) ))
+                .andDo(print());
     }
 
     private void setUpSimulationResult() {
@@ -118,9 +115,9 @@ class SimulationControllerTest {
     private void setUpSimulation() {
         Simulation simulation = new Simulation();
         simulation.setId(ID);
-        simulation.setName("sample");
-        simulation.setPopulation(10);
-        simulation.setInfected(5);
+        simulation.setN("sample");
+        simulation.setP(10);
+        simulation.setI(5);
         simulation.setR(0.5);
         simulation.setM(0.1);
         simulation.setTi(5);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "simulation_results")
@@ -15,28 +16,24 @@ import javax.persistence.*;
 @ToString(exclude = "simulation")
 public class SimulationResult {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "pi")
-    @NonNull
     private long pi;
 
     @Column(name = "pv")
-    @NonNull
     private long pv;
 
     @Column(name = "pm")
-    @NonNull
     private long pm;
 
     @Column(name = "pr")
-    @NonNull
     private long pr;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "simulation_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
-    @NonNull
     private Simulation simulation;
 }
