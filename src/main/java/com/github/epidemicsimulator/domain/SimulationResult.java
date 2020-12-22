@@ -36,4 +36,14 @@ public class SimulationResult {
     @JoinColumn(name = "simulation_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private Simulation simulation;
+
+    public static SimulationResult copy(SimulationResult simulationResult) {
+        return new SimulationResult(
+                simulationResult.getId(),
+                simulationResult.getPi(),
+                simulationResult.getPv(),
+                simulationResult.getPm(),
+                simulationResult.getPr(),
+                simulationResult.getSimulation());
+    }
 }

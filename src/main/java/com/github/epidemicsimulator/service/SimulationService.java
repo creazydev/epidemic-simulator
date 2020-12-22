@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class SimulationService {
-    private final SimulationResultFactory<Simulation, SimulationResult> resultFactory;
+    private final Generator<Simulation, SimulationResult> resultFactory;
     private final SimulationRepository repository;
 
     public List<Simulation> getAll() {
@@ -22,7 +22,7 @@ public class SimulationService {
 
     @Transactional
     public Simulation generateAndSave(Simulation simulation) {
-        simulation.setResults(resultFactory.create(simulation));
+        simulation.setResults(resultFactory.generate(simulation));
         return repository.save(simulation);
     }
 

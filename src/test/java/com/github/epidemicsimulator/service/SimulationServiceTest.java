@@ -19,14 +19,14 @@ class SimulationServiceTest {
     private SimulationRepository repository;
 
     @Mock
-    private SimulationResultFactory<Simulation, SimulationResult> resultFactory;
+    private Generator<Simulation, SimulationResult> generator;
 
     private SimulationService service;
     private final Long ID = 1L;
 
     @BeforeEach
     void setUp() {
-        service = new SimulationService(resultFactory, repository);
+        service = new SimulationService(generator, repository);
     }
 
     @AfterEach
@@ -50,7 +50,7 @@ class SimulationServiceTest {
     void testGenerateAndSave() {
         Simulation simulation = new Simulation();
         service.generateAndSave(simulation);
-        verify(resultFactory, times(1)).create(simulation);
+        verify(generator, times(1)).generate(simulation);
         verify(repository, times(1)).save(simulation);
     }
 
