@@ -31,6 +31,8 @@ public class SimulationService {
     }
 
     public void deleteSimulation(Long id) {
-        repository.deleteById(id);
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+        }
     }
 }
