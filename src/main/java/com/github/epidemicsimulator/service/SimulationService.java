@@ -1,7 +1,7 @@
 package com.github.epidemicsimulator.service;
 
-import com.github.epidemicsimulator.domain.SimulationResult;
 import com.github.epidemicsimulator.domain.Simulation;
+import com.github.epidemicsimulator.domain.SimulationResult;
 import com.github.epidemicsimulator.repository.SimulationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

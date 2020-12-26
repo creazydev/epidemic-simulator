@@ -18,13 +18,21 @@ public class ResultGeneratorWrapper implements Generator<Simulation, SimulationR
 
     private static class DayCounter {
         int ts, tm, ti;
+
         protected DayCounter(int initial) {
             ts = tm = ti = initial;
         }
-        public void increment() { ts++; tm++; ti++; }
+
+        public void increment() {
+            ts++;
+            tm++;
+            ti++;
+        }
+
         public void resetTm() {
             tm = 0;
         }
+
         public void resetTi() {
             ti = 0;
         }
@@ -57,7 +65,7 @@ public class ResultGeneratorWrapper implements Generator<Simulation, SimulationR
                 if (hasInfectionToRecoveryTimeElapsed(simulation.getTi())) {
                     previousPi = results.get(counter.ts - simulation.getTi()).getPi();
                     newRecovers = round(
-                            ((result.getPi() < previousPi) ? result.getPi() : previousPi) * (1-simulation.getM()));
+                            ((result.getPi() < previousPi) ? result.getPi() : previousPi) * (1 - simulation.getM()));
                     result.setPi(result.getPi() - newRecovers);
                     result.setPr(result.getPr() + newRecovers);
                     counter.resetTi();
