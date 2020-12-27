@@ -56,7 +56,9 @@ class SimulationServiceTest {
 
     @Test
     void testDelete() {
+        when(repository.existsById(ID)).thenReturn(true);
         service.deleteSimulation(ID);
+        verify(repository, times(1)).existsById(ID);
         verify(repository, times(1)).deleteById(ID);
     }
 }

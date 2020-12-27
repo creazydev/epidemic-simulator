@@ -18,7 +18,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -125,5 +127,15 @@ class SimulationControllerTest {
         simulation.setTs(30);
         simulation.setResults(Collections.singletonList(this.simulationResult));
         this.simulation = Optional.of(simulation);
+    }
+
+    @Test
+    public void shouldThrowNotFoundException() throws Exception {
+        Long invalidId = -1L;
+        mockMvc.perform(get(BASE_PATH + "/" + invalidId ))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("message",
+                        containsString("Simulation could not be found with id:") ));
+
     }
 }
